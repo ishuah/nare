@@ -6,8 +6,8 @@ import (
 
 // Stream object
 type Stream struct {
-	client 		*torrent.Client
-	torrents	map[string]*torrent.Torrent
+	client   *torrent.Client
+	torrents map[string]*torrent.Torrent
 }
 
 // NewStream returns a Stream instance
