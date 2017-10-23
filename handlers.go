@@ -3,12 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/julienschmidt/httprouter"
 	"net/http"
+
+	"github.com/julienschmidt/httprouter"
 )
 
 type torrentDownload struct {
 	Magnet string
+	Hash   string
 }
 
 // Handler object type
@@ -26,17 +28,20 @@ func (h *Handler) Index(w http.ResponseWriter, r *http.Request, _ httprouter.Par
 	fmt.Fprint(w, "Welcome!\n")
 }
 
-// Torrent starts downloading a torrent with a magnet link
+// Magnet starts downloading a torrent with a magnet link
 // POST
-func (h *Handler) Torrent(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+func (h *Handler) Magnet(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	decoder := json.NewDecoder(r.Body)
-	var td torrentDownload
-	err := decoder.Decode(&td)
+	var t torrentDownload
+	err := decoder.Decode(&t)
 	if err != nil {
 		panic(err)
 	}
 
-	h.stream.NewMagnet(td.Magnet)
+	h.stream.NewMagnet(&t)
+	response, err := json.Marshal(t)
 
-	fmt.Fprintf(w, "finished downloading: %s!\n", td.Magnet)
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	w.Write(response)
 }

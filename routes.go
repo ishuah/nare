@@ -24,8 +24,8 @@ func routes() Routes {
 		},
 		Route{
 			"POST",
-			"/torrent",
-			handler.Torrent,
+			"/torrent/magnet",
+			handler.Magnet,
 		},
 	}
 	return routes
