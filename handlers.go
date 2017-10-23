@@ -41,6 +41,10 @@ func (h *Handler) Magnet(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 	h.stream.NewMagnet(&t)
 	response, err := json.Marshal(t)
 
+	if err != nil {
+		panic(err)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	w.Write(response)
