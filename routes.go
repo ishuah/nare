@@ -27,6 +27,11 @@ func routes() Routes {
 			"/torrent/magnet",
 			handler.Magnet,
 		},
+		Route{
+			"GET",
+			"/torrent/progress/:hash",
+			handler.Progress,
+		},
 	}
 	return routes
 }

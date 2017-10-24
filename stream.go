@@ -26,13 +26,13 @@ func (s *Stream) NewMagnet(td *torrentDownload) {
 }
 
 // TorrentProgress returns the specified torrent's progress
-func (s *Stream) TorrentProgress(hashString string) (int64, error) {
+func (s *Stream) TorrentProgress(hashString string) (int64, int64, error) {
 	hash := metainfo.NewHashFromHex(hashString)
 	t, ok := s.client.Torrent(hash)
 	if !ok {
-		return 0, errors.New("Error retrieving torrent with hash " + hashString)
+		return 0, 0, errors.New("Error retrieving torrent with hash " + hashString)
 	}
-	return t.BytesCompleted(), nil
+	return t.Length(), t.BytesCompleted(), nil
 }
 
 func (s *Stream) startTorrent(t *torrent.Torrent) {

@@ -13,6 +13,11 @@ type torrentDownload struct {
 	Hash   string
 }
 
+type torrentProgress struct {
+	BytesCompleted int64
+	Length         int64
+}
+
 // Handler object type
 type Handler struct {
 	stream *Stream
@@ -39,13 +44,28 @@ func (h *Handler) Magnet(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 	}
 
 	h.stream.NewMagnet(&t)
-	response, err := json.Marshal(t)
+	h.jsonResponse(w, http.StatusCreated, t)
+}
+
+func (h *Handler) Progress(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	length, bytesCompleted, err := h.stream.TorrentProgress(ps.ByName("hash"))
+	if err != nil {
+		panic(err)
+	}
+
+	progress := torrentProgress{BytesCompleted: bytesCompleted, Length: length}
+
+	h.jsonResponse(w, http.StatusOK, progress)
+}
+
+func (h *Handler) jsonResponse(w http.ResponseWriter, status int, object interface{}) {
+	response, err := json.Marshal(object)
 
 	if err != nil {
 		panic(err)
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(status)
 	w.Write(response)
 }
