@@ -33,7 +33,7 @@ func (h *Handler) Index(w http.ResponseWriter, r *http.Request, _ httprouter.Par
 	fmt.Fprint(w, "Welcome!\n")
 }
 
-// Magnet starts downloading a torrent with a magnet link
+// Magnet starts downloading a torrent when given a magnet link
 // POST
 func (h *Handler) Magnet(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	decoder := json.NewDecoder(r.Body)
@@ -47,6 +47,7 @@ func (h *Handler) Magnet(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 	h.jsonResponse(w, http.StatusCreated, t)
 }
 
+// Progress returns a torrent's length and bytesCompleted when given a torrent hash
 func (h *Handler) Progress(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
 	length, bytesCompleted, err := h.stream.TorrentProgress(ps.ByName("hash"))
 	if err != nil {
