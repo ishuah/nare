@@ -47,7 +47,7 @@ func (s *Stream) Torrents() []Torrent {
 	return ts
 }
 
-// TorrentProgress returns the specified torrent's progress
+// Torrent returns the specified torrent's progress
 func (s *Stream) Torrent(hashString string) (Torrent, error) {
 	hash := metainfo.NewHashFromHex(hashString)
 	t, ok := s.client.Torrent(hash)

@@ -13,6 +13,7 @@ type download struct {
 	Source string
 }
 
+// Torrent represents a simplified torrent.Torrent
 type Torrent struct {
 	Name           string
 	Hash           string
