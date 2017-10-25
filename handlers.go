@@ -5,12 +5,20 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/anacrolix/torrent/metainfo"
 	"github.com/julienschmidt/httprouter"
 )
 
-type torrentDownload struct {
-	Magnet string
-	Hash   string
+type download struct {
+	Source string
+}
+
+type Torrent struct {
+	Name           string
+	Hash           string
+	Length         int64
+	BytesCompleted int64
+	Files          []metainfo.FileInfo
 }
 
 type torrentProgress struct {
@@ -33,30 +41,38 @@ func (h *Handler) Index(w http.ResponseWriter, r *http.Request, _ httprouter.Par
 	fmt.Fprint(w, "Welcome!\n")
 }
 
+// Torrents returns all the torrents loaded in the Client
+func (h *Handler) Torrents(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	torrents := h.stream.Torrents()
+	h.jsonResponse(w, http.StatusOK, torrents)
+}
+
+// Torrent returns a torrent's length and bytesCompleted when given a torrent hash
+func (h *Handler) Torrent(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
+	t, err := h.stream.Torrent(ps.ByName("hash"))
+	if err != nil {
+		h.jsonResponse(w, http.StatusNotFound, err)
+	}
+
+	h.jsonResponse(w, http.StatusOK, t)
+}
+
 // Magnet starts downloading a torrent when given a magnet link
 // POST
 func (h *Handler) Magnet(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	decoder := json.NewDecoder(r.Body)
-	var t torrentDownload
-	err := decoder.Decode(&t)
+	var d download
+	err := decoder.Decode(&d)
 	if err != nil {
-		panic(err)
+		h.jsonResponse(w, http.StatusBadRequest, err)
 	}
 
-	h.stream.NewMagnet(&t)
+	t, err := h.stream.NewMagnet(&d)
+
+	if err != nil {
+		h.jsonResponse(w, http.StatusBadRequest, err)
+	}
 	h.jsonResponse(w, http.StatusCreated, t)
-}
-
-// Progress returns a torrent's length and bytesCompleted when given a torrent hash
-func (h *Handler) Progress(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	length, bytesCompleted, err := h.stream.TorrentProgress(ps.ByName("hash"))
-	if err != nil {
-		panic(err)
-	}
-
-	progress := torrentProgress{BytesCompleted: bytesCompleted, Length: length}
-
-	h.jsonResponse(w, http.StatusOK, progress)
 }
 
 func (h *Handler) jsonResponse(w http.ResponseWriter, status int, object interface{}) {

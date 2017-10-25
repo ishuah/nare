@@ -24,13 +24,18 @@ func routes() Routes {
 		},
 		Route{
 			"POST",
-			"/torrent/magnet",
+			"/torrents/magnet",
 			handler.Magnet,
 		},
 		Route{
 			"GET",
-			"/torrent/progress/:hash",
-			handler.Progress,
+			"/torrents/:hash",
+			handler.Torrent,
+		},
+		Route{
+			"GET",
+			"/torrents",
+			handler.Torrents,
 		},
 	}
 	return routes
