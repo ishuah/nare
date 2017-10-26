@@ -1,4 +1,4 @@
-package main
+package stream
 
 import (
 	"errors"
@@ -6,6 +6,20 @@ import (
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
 )
+
+// Download represents the download object
+type Download struct {
+	Source string
+}
+
+// Torrent represents a simplified torrent.Torrent
+type Torrent struct {
+	Name           string
+	Hash           string
+	Length         int64
+	BytesCompleted int64
+	Files          []metainfo.FileInfo
+}
 
 // Stream object
 type Stream struct {
@@ -19,7 +33,7 @@ func NewStream() *Stream {
 }
 
 // NewMagnet starts downloading from a magnet link
-func (s *Stream) NewMagnet(d *download) (Torrent, error) {
+func (s *Stream) NewMagnet(d *Download) (Torrent, error) {
 	t, err := s.client.AddMagnet(d.Source)
 
 	if err != nil {

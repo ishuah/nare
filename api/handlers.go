@@ -1,40 +1,22 @@
-package main
+package api
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/anacrolix/torrent/metainfo"
+	"github.com/ishuah/batian/stream"
 	"github.com/julienschmidt/httprouter"
 )
 
-type download struct {
-	Source string
-}
-
-// Torrent represents a simplified torrent.Torrent
-type Torrent struct {
-	Name           string
-	Hash           string
-	Length         int64
-	BytesCompleted int64
-	Files          []metainfo.FileInfo
-}
-
-type torrentProgress struct {
-	BytesCompleted int64
-	Length         int64
-}
-
 // Handler object type
 type Handler struct {
-	stream *Stream
+	stream *stream.Stream
 }
 
 // NewHandler returns
 func NewHandler() *Handler {
-	return &Handler{stream: NewStream()}
+	return &Handler{stream: stream.NewStream()}
 }
 
 // Index returns a useless string
@@ -62,7 +44,7 @@ func (h *Handler) Torrent(w http.ResponseWriter, r *http.Request, ps httprouter.
 // POST
 func (h *Handler) Magnet(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
 	decoder := json.NewDecoder(r.Body)
-	var d download
+	var d stream.Download
 	err := decoder.Decode(&d)
 	if err != nil {
 		h.jsonResponse(w, http.StatusBadRequest, err)
