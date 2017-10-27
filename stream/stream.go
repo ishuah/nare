@@ -64,7 +64,7 @@ func (s *Stream) NewMagnet(d *Download) (Torrent, error) {
 
 // Torrents returns all the torrents added to a client
 func (s *Stream) Torrents() []Torrent {
-	var ts []Torrent
+	ts := make([]Torrent, 0)
 	for _, t := range s.client.Torrents() {
 		tt := Torrent{Name: t.Name(),
 			Hash:           t.InfoHash().HexString(),
