@@ -66,11 +66,13 @@ func (s *Stream) NewMagnet(d *Download) (Torrent, error) {
 func (s *Stream) Torrents() []Torrent {
 	ts := make([]Torrent, 0)
 	for _, t := range s.client.Torrents() {
-		tt := Torrent{Name: t.Name(),
-			Hash:           t.InfoHash().HexString(),
-			Length:         t.Length(),
-			BytesCompleted: t.BytesCompleted(),
-			Files:          t.Info().Files}
+		tt := Torrent{Name: t.Name(), Hash: t.InfoHash().HexString()}
+		if t.Info() != nil {
+			tt.Length = t.Length()
+			tt.BytesCompleted = t.BytesCompleted()
+			tt.Files = t.Info().Files
+		}
+
 		ts = append(ts, tt)
 	}
 	return ts

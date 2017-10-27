@@ -24,17 +24,17 @@ func routes() Routes {
 		},
 		Route{
 			"POST",
-			"/torrents/magnet",
+			"/api/torrents/magnet",
 			handler.Magnet,
 		},
 		Route{
 			"GET",
-			"/torrents/:hash",
+			"/api/torrents/:hash",
 			handler.Torrent,
 		},
 		Route{
 			"GET",
-			"/torrents",
+			"/api/torrents",
 			handler.Torrents,
 		},
 	}
