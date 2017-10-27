@@ -3,8 +3,10 @@ package stream
 import (
 	"errors"
 
+	"github.com/anacrolix/dht"
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
+	"github.com/ishuah/batian/config"
 )
 
 // Download represents the download object
@@ -28,7 +30,20 @@ type Stream struct {
 
 // NewStream returns a Stream instance
 func NewStream() *Stream {
-	c, _ := torrent.NewClient(nil)
+	cc, err := config.GetConfig()
+
+	if err != nil {
+		panic(err)
+	}
+
+	tc := torrent.Config{
+		DHTConfig: dht.ServerConfig{
+			StartingNodes: dht.GlobalBootstrapAddrs,
+		},
+		DataDir: cc.DownloadDir,
+	}
+
+	c, _ := torrent.NewClient(&tc)
 	return &Stream{client: c}
 }
 
