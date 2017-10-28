@@ -1,8 +1,8 @@
-package api
+package handlers
 
 import (
 	"encoding/json"
-	"fmt"
+	"text/template"
 	"net/http"
 
 	"github.com/ishuah/batian/stream"
@@ -19,9 +19,10 @@ func NewHandler() *Handler {
 	return &Handler{stream: stream.NewStream()}
 }
 
-// Index returns a useless string
+// Index returns the SPA
 func (h *Handler) Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	fmt.Fprint(w, "Welcome!\n")
+	t, _ := template.ParseFiles("frontend/index.html")
+	t.Execute(w, nil)
 }
 
 // Torrents returns all the torrents loaded in the Client

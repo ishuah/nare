@@ -4,10 +4,10 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ishuah/batian/api"
+	"github.com/ishuah/batian/handlers"
 )
 
 func main() {
-	router := api.NewRouter()
+	router := handlers.NewRouter()
 	log.Fatal(http.ListenAndServe(":2906", router))
 }
