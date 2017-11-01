@@ -28,6 +28,11 @@ func routes() Routes {
 			handler.Magnet,
 		},
 		Route{
+			"POST",
+			"/api/torrents/url",
+			handler.TorrentURL,
+		},
+		Route{
 			"GET",
 			"/api/torrents/:hash",
 			handler.Torrent,

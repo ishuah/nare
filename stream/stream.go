@@ -7,6 +7,7 @@ import (
 	"github.com/anacrolix/torrent"
 	"github.com/anacrolix/torrent/metainfo"
 	"github.com/ishuah/batian/config"
+	"github.com/ishuah/batian/utils"
 )
 
 // Download represents the download object
@@ -48,13 +49,33 @@ func NewStream() *Stream {
 }
 
 // NewMagnet starts downloading from a magnet link
-func (s *Stream) NewMagnet(d *Download) (Torrent, error) {
-	t, err := s.client.AddMagnet(d.Source)
+func (s *Stream) NewMagnet(source string) (Torrent, error) {
+	t, err := s.client.AddMagnet(source)
 
 	if err != nil {
 		return Torrent{}, err
 	}
 
+	tt := Torrent{Name: t.Name(),
+		Hash: t.InfoHash().HexString()}
+
+	go s.startTorrent(t)
+	return tt, nil
+}
+
+// NewTorrentURL starts downloading from a torrent file url
+func (s *Stream) NewTorrentURL(source string) (Torrent, error) {
+	filename, err := utils.Download(source)
+	if err != nil {
+		return Torrent{}, err
+	}
+
+	mi, err := metainfo.LoadFromFile(filename)
+	if err != nil {
+		return Torrent{}, err
+	}
+
+	t, err := s.client.AddTorrent(mi)
 	tt := Torrent{Name: t.Name(),
 		Hash: t.InfoHash().HexString()}
 

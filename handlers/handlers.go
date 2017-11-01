@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
-	"text/template"
 	"net/http"
+	"text/template"
 
 	"github.com/ishuah/batian/stream"
 	"github.com/julienschmidt/httprouter"
@@ -51,7 +51,24 @@ func (h *Handler) Magnet(w http.ResponseWriter, r *http.Request, _ httprouter.Pa
 		h.jsonResponse(w, http.StatusBadRequest, err)
 	}
 
-	t, err := h.stream.NewMagnet(&d)
+	t, err := h.stream.NewMagnet(d.Source)
+
+	if err != nil {
+		h.jsonResponse(w, http.StatusBadRequest, err)
+	}
+	h.jsonResponse(w, http.StatusCreated, t)
+}
+
+// TorrentURL starts downloading a torrent when given a torrent url
+func (h *Handler) TorrentURL(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
+	decoder := json.NewDecoder(r.Body)
+	var d stream.Download
+	err := decoder.Decode(&d)
+	if err != nil {
+		h.jsonResponse(w, http.StatusBadRequest, err)
+	}
+
+	t, err := h.stream.NewTorrentURL(d.Source)
 
 	if err != nil {
 		h.jsonResponse(w, http.StatusBadRequest, err)
