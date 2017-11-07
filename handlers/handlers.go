@@ -3,7 +3,6 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
-	"text/template"
 
 	"github.com/ishuah/batian/stream"
 	"github.com/julienschmidt/httprouter"
@@ -21,8 +20,7 @@ func NewHandler() *Handler {
 
 // Index returns the SPA
 func (h *Handler) Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	t, _ := template.ParseFiles("frontend/index.html")
-	t.Execute(w, nil)
+	http.ServeFile(w, r, "frontend/index.html")
 }
 
 // Torrents returns all the torrents loaded in the Client
